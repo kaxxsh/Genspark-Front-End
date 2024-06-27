@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="../../scss/main/nav/css/nav.css" />
+    <link rel="stylesheet" href="../../scss/global/css/Styles.css" />
+    <link rel="stylesheet" href="../../scss/area 51/admin/css/Styles.css" />
+  </head>
+  <script src="../../js/config.js"></script>
+  <script>
+        document.addEventListener("DOMContentLoaded", function () {
+        const hamburgerBtn = document.getElementById("hamburgerBtn");
+        const closeBtn = document.getElementById("closeBtn");
+        const navbar = document.getElementById("menu");
+        const body = document.body;
+
+        function adjustMenuDisplay() {
+          if (window.innerWidth > 768) {
+            navbar.style.display = "flex";
+            hamburgerBtn.style.display = "none";
+          } else {
+            navbar.style.display = "none";
+            hamburgerBtn.style.display = "block";
+          }
+        }
+
+        // Call adjustMenuDisplay on page load and window resize
+        adjustMenuDisplay();
+        window.addEventListener("resize", adjustMenuDisplay);
+
+        hamburgerBtn.addEventListener("click", function () {
+          navbar.classList.toggle("active");
+          navbar.style.display = "flex";
+          hamburgerBtn.style.display = "none";
+        });
+
+        closeBtn.addEventListener("click", function () {
+          navbar.style.display = "none";
+          navbar.classList.remove("active");
+          hamburgerBtn.style.display = "block";
+        });
+      });
+    async function fetchData() {
+      try {
+        const response = await fetch(`${URLS.base}/api/Admin/Train`);
+        const stationResponse = await fetch(
+          `${URLS.base}/api/User/Station`
+        );
+        const trainData = await response.json();
+        const stationData = await stationResponse.json();
+        return { train: trainData, station: stationData };
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    function getStationName(stationId, stations) {
+      const station = stations.find(
+        (station) => station.stationId === stationId
+      );
+      return station ? station.stationName : "Unknown";
+    }
+
+    function createTableRow(train, index, stations) {
+      const sourceName = getStationName(train.trainRoute.source, stations);
+      const destinationName = getStationName(
+        train.trainRoute.destination,
+        stations
+      );
+      return `
+          <div class="Card">
+            <div class="Card-data">
+              <div class="table-data-train">${index + 1}</div>
+              <div class="table-data-train">${train.trainNumber}</div>
+              <div class="table-data-train">${train.trainName}</div>
+              <div class="table-data-train">${sourceName}</div>
+              <div class="table-data-train">${destinationName}</div>
+            </div>
+            <div class="Card-edit">
+              <img src="../../Asserts/Nav/edit.svg" alt="Edit" onclick="edittrain('${
+                train.trainId
+              }')" />
+              <img src="../../Asserts/Nav/delete.svg" alt="Delete" onclick="deletetrain('${
+                train.trainId
+              }')"/>
+            </div>
+          </div>
+        `;
+    }
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      const tableDataContainer = document.querySelector(".table-data");
+      const data = await fetchData();
+      console.log(data);
+      if (data && data.train && data.station) {
+        tableDataContainer.innerHTML = data.train
+          .map((train, index) => createTableRow(train, index, data.station))
+          .join("");
+      }
+    });
+
+    const deletetrain = (id) => {
+      fetch(`${URLS.base}/api/Admin/Train/${id}`, {
+        method: "DELETE",
+      })
+        .then((response) => {
+          if (response.ok) {
+            alert("Train deleted successfully");
+            window.location.reload();
+          } else {
+            alert("Error deleting train");
+          }
+        })
+        .catch((error) => {
+          console.error("Error deleting train:", error);
+        });
+    };
+
+    const edittrain = (id) => {
+      window.location.href = `./add/addtrain.html?id=${id}`;
+    };
+  </script>
+  <body>
+    <nav>
+      <div class="logo">
+        <button class="hamburger" id="hamburgerBtn">&#9776;</button>
+        <img src="../../Asserts/Nav/logo.svg" alt="Company Logo" />
+        <div class="title">Train</div>
+      </div>
+      <div class="menu" id="topmenu">
+        <div class="customer">
+          <img src="../../Asserts/Nav/customer.svg" alt="Customer Service" />
+          <div class="title">Customer Service</div>
+        </div>
+        <div class="tickets">
+          <img src="../../Asserts/Nav/tickets.svg" alt="Tickets" />
+          <div class="title">My Tickets</div>
+        </div>
+
+        <div class="auth">
+          <img src="../../Asserts/Nav/user.svg" alt="User" />
+          <div
+            class="title"
+            onclick="window.location.href = 'registration.html'"
+          >
+            Logout
+          </div>
+        </div>
+      </div>
+    </nav>
+    <main>
+      <div class="menu " id="menu">
+        <a class="list" href="./admin.html">
+          <img
+            src="../../Asserts/area 51/nav/admin.svg"
+            alt="Admin Management"
+          />
+          <div class="title">Admin Management</div>
+        </a>
+        <a class="list" href="./user.html">
+          <img src="../../Asserts/area 51/nav/user.svg" alt="User Management" />
+          <div class="title">User Management</div>
+        </a>
+        <a class="list" href="./station.html">
+          <img src="../../Asserts/area 51/nav/station.svg" alt="Stations" />
+          <div class="title">Stations</div>
+        </a>
+        <a class="list" href="./train.html">
+          <img src="../../Asserts/area 51/nav/trains.svg" alt="Trains" />
+          <div class="title">Trains</div>
+        </a>
+        <a class="list" href="./ticket.html">
+          <img src="../../Asserts/area 51/nav/Tickets.svg" alt="Tickets" />
+          <div class="title">Tickets</div>
+        </a>
+        <button class="close-btn" id="closeBtn">&times;</button>
+      </div>
+      <div class="main" id="bottommain">
+        <div class="list">
+          <a href="./add/addtrain.html">
+            <div class="add stationadd">
+              <img src="../../Asserts/area 51/nav/add.svg" alt="" />
+              <div class="title">ADD TRAIN</div>
+            </div>
+          </a>
+        </div>
+        <div class="table">
+          <div class="table-heading">
+            <div class="table-title-train">S.No</div>
+            <div class="table-title-train">Train Number</div>
+            <div class="table-title-train">Train Name</div>
+            <div class="table-title-train">Source</div>
+            <div class="table-title-train">Destination</div>
+          </div>
+          <div class="table-data"></div>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="../scss/auth/css/Styles.css" />
+  </head>
+  <body>
+    <div class="registraion-container">
+      <div class="heading">
+        <div class="topic">Login</div>
+        <div class="description">
+          Enter your Email or Username and Password to Login
+        </div>
+      </div>
+      <form id="loginForm">
+        <div class="input-container">
+          <div class="input">
+            <label for="Username">Username</label>
+            <input
+              type="text"
+              id="Username"
+              placeholder="eg Username"
+              required
+            />
+          </div>
+          <div class="input">
+            <label for="Password">Password</label>
+            <input
+              type="password"
+              id="Password"
+              placeholder="eg User@123"
+              required
+            />
+          </div>
+          <button type="button" onclick="submitForm();">Login</button>
+        </div>
+      </form>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.7.2/axios.min.js"></script>
+    <script src="../js/config.js"></script>
+    <script>
+      function submitForm() {
+        const username = document.getElementById("Username").value;
+        const password = document.getElementById("Password").value;
+        axios
+          .post(
+            `${URLS.base}/api/Auth/login`,
+            {
+              username: username,
+              password: password,
+            },
+            {
+              withCredentials: true,
+            }
+          )
+          .then((res) => {
+            console.log(res.data);
+            document.cookie = `token=${res.data.token}; expires=${
+              new Date() + 1
+            }; path=/`;
+            window.location.href = "./main.html";
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      }
+    </script>
+  </body>
+</html>

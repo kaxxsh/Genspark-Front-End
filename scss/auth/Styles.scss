@@ -1,0 +1,103 @@
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  font-family: "Poppins", sans-serif;
+  background-color: #ffdee9;
+  background-image: linear-gradient(0deg, #ffdee9 0%, #b5fffc 100%);
+  user-select: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.registraion-container {
+  width: 35vw;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  .heading {
+    height: 8vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    .topic {
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+  }
+}
+.input-container {
+  margin-left: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  justify-content: center;
+  .input {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    label {
+      font-weight: 500;
+    }
+    input {
+      padding: 0.5rem;
+      border: none;
+      border-radius: 5px;
+      outline: none;
+      font-size: 1rem;
+      background-color: #f5f5f5;
+    }
+  }
+  button {
+    padding: 0.5rem;
+    border: none;
+    border-radius: 5px;
+    outline: none;
+    font-size: 1rem;
+    background-color: black;
+    color: white;
+    cursor: pointer;
+    &:hover {
+      background-color: #333;
+    }
+  }
+  .or {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    .line {
+      width: 40%;
+      height: 1px;
+      background-color: black;
+    }
+    .text {
+      font-weight: 500;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .registraion-container {
+    width: 90vw;
+  }
+
+  .input-container {
+    margin-left: 1rem;
+    .input {
+      label, input {
+        font-size: 0.9rem;
+      }
+    }
+    button {
+      font-size: 0.9rem;
+    }
+  }
+
+  .description{
+    font-size: 0.9rem;
+    
+  }
+}

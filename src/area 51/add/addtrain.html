@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Train Registration Form</title>
+    <!-- Tailwind CSS CDN -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <!-- jQuery CDN -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- jQuery UI CDN -->
+    <link
+      rel="stylesheet"
+      href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"
+    />
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <script src="../../../js/config.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        // Get train ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const trainId = urlParams.get("id");
+
+        const formTitle = document.getElementById("formTitle");
+        const formButton = document.getElementById("formButton");
+
+        let stations = [];
+
+        // Fetch station data for autocomplete
+        fetch(`${URLS.base}/api/User/Station`)
+          .then((response) => response.json())
+          .then((data) => {
+            stations = data.map((station) => ({
+              label: station.stationName,
+              value: station.stationName,
+              id: station.stationId,
+            }));
+            console.log("Stations loaded:", stations); // Debug: Check loaded stations
+
+            if (trainId) {
+              formTitle.textContent = "Editing Train Details";
+              formButton.textContent = "Edit Train";
+
+              // Fetch existing train data
+              fetch(`${URLS.base}/api/User/Train/${trainId}`)
+                .then((response) => response.json())
+                .then((data) => {
+                  document.getElementById("trainName").value = data.trainName;
+                  document.getElementById("trainNumber").value =
+                    data.trainNumber;
+                  document.getElementById("trainType").value = data.trainType;
+                  document.getElementById("trainStatus").value =
+                    data.trainStatus;
+                  document.getElementById("totalSeats").value = data.totalSeats;
+                  document.getElementById("fare").value = data.fare;
+                  document.getElementById("distance").value =
+                    data.trainRoute.distance;
+                  document.getElementById("duration").value =
+                    data.trainRoute.duration;
+
+                  // Find station names from their IDs
+                  const sourceStation = stations.find(
+                    (station) => station.id === data.trainRoute.source
+                  );
+                  const destinationStation = stations.find(
+                    (station) => station.id === data.trainRoute.destination
+                  );
+
+                  if (sourceStation)
+                    document.getElementById("source").value =
+                      sourceStation.label;
+                  if (destinationStation)
+                    document.getElementById("destination").value =
+                      destinationStation.label;
+
+                  // Set station names in the stationIds field if stationIds exist
+                  if (Array.isArray(data.trainRoute.stationIds)) {
+                    const stationNames = data.trainRoute.stationIds.map(
+                      (id) => {
+                        const station = stations.find(
+                          (station) => station.id === id
+                        );
+                        return station ? station.label : id;
+                      }
+                    );
+                    document.getElementById("stationIds").value =
+                      stationNames.join(", ");
+                  }
+                })
+                .catch((error) => {
+                  console.error("Error fetching train data:", error);
+                });
+            }
+          })
+          .catch((error) => {
+            console.error("Error fetching station data:", error);
+          });
+
+        let selectedSourceId = null;
+        let selectedDestinationId = null;
+        let selectedStationIds = [];
+
+        // Autocomplete for source and destination fields
+        $("#source").autocomplete({
+          source: (request, response) => {
+            const results = $.ui.autocomplete.filter(stations, request.term);
+            response(results);
+          },
+          select: function (event, ui) {
+            $(this).val(ui.item.label);
+            selectedSourceId = ui.item.id;
+            return false;
+          },
+        });
+
+        $("#destination").autocomplete({
+          source: (request, response) => {
+            const results = $.ui.autocomplete.filter(stations, request.term);
+            response(results);
+          },
+          select: function (event, ui) {
+            $(this).val(ui.item.label);
+            selectedDestinationId = ui.item.id;
+            return false;
+          },
+        });
+
+        // Autocomplete for station IDs field
+        $("#stationIds").autocomplete({
+          source: (request, response) => {
+            const term = request.term.split(/,\s*/).pop();
+            const results = $.ui.autocomplete.filter(stations, term);
+            response(results);
+          },
+          focus: function () {
+            return false;
+          },
+          select: function (event, ui) {
+            // Add selected station ID to the list if it's not already there
+            if (!selectedStationIds.includes(ui.item.id)) {
+              selectedStationIds.push(ui.item.id);
+              // Update the input value to display the selected station names
+              const terms = this.value.split(/,\s*/);
+              terms.pop();
+              terms.push(ui.item.label);
+              terms.push("");
+              this.value = terms.join(", ");
+            }
+            return false;
+          },
+        });
+
+        // Form submission handling
+        $("#trainForm").on("submit", (event) => {
+          event.preventDefault();
+          const trainName = $("#trainName").val();
+          const trainNumber = $("#trainNumber").val();
+          const trainType = parseInt($("#trainType").val());
+          const trainStatus = parseInt($("#trainStatus").val());
+          const totalSeats = $("#totalSeats").val();
+          const fare = $("#fare").val();
+          const distance = $("#distance").val();
+          const duration = $("#duration").val();
+
+          const trainRoute = {
+            source: selectedSourceId,
+            destination: selectedDestinationId,
+            distance: distance,
+            duration: duration,
+            stationIds: selectedStationIds,
+          };
+
+          const method = trainId ? "PUT" : "POST";
+          const url = trainId
+            ? `${URLS.base}/api/Admin/Train/${trainId}`
+            : `${URLS.base}/api/Admin/Train`;
+
+          console.log(
+            trainName,
+            trainNumber,
+            trainType,
+            trainStatus,
+            totalSeats,
+            fare,
+            trainRoute
+          );
+
+          fetch(url, {
+            method: method,
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              trainName,
+              trainNumber,
+              trainType,
+              trainStatus,
+              totalSeats,
+              fare,
+              trainRoute,
+            }),
+          })
+            .then((response) => {
+              if (response.ok) {
+                alert(
+                  `Train ${trainId ? "updated" : "registered"} successfully`
+                );
+                window.location.href = "../train.html";
+              } else {
+                response.json().then((data) => {
+                  alert(`Error: ${data.message}`);
+                });
+              }
+            })
+            .catch((error) => {
+              alert(`Error: ${error.message}`);
+            });
+        });
+      });
+    </script>
+  </head>
+  <body class="bg-gray-100 min-h-screen flex items-center justify-center">
+    <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-4xl">
+      <h2 id="formTitle" class="text-2xl font-bold mb-6 text-gray-800">
+        Register Train
+      </h2>
+      <form
+        id="trainForm"
+        class="space-y-6 grid grid-cols-1 sm:grid-cols-2 gap-6"
+      >
+        <div>
+          <label for="trainName" class="block text-gray-700">Train Name</label>
+          <input
+            type="text"
+            id="trainName"
+            name="trainName"
+            class="w-full p-2 border border-gray-300 rounded mt-1 focus:ring-2 focus:ring-indigo-500"
+            required
+          />
+          <p
+            id="trainName-feedback"
+            class="text-red-500 text-sm mt-1 hidden"
+          ></p>
+        </div>
+        <div>
+          <label for="trainNumber" class="block text-gray-700"
+            >Train Number</label
+          >
+          <input
+            type="number"
+            id="trainNumber"
+            name="trainNumber"
+            class="w-full p-2 border border-gray-300 rounded mt-1 focus:ring-2 focus:ring-indigo-500"
+            required
+          />
+          <p
+            id="trainNumber-feedback"
+            class="text-red-500 text-sm mt-1 hidden"
+          ></p>
+        </div>
+        <div>
+          <label for="trainType" class="block text-gray-700">Train Type</label>
+          <select
+            id="trainType"
+            name="trainType"
+            class="w-full p-2 border border-gray-300 rounded mt-1 focus:ring-2 focus:ring-indigo-500"
+            required
+          >
+            <option value="" disabled selected>Select train type</option>
+            <option value="0">Passenger</option>
+            <option value="1">Freight</option>
+            <option value="2">Express</option>
+          </select>
+          <p
+            id="trainType-feedback"
+            class="text-red-500 text-sm mt-1 hidden"
+          ></p>
+        </div>
+        <div>
+          <label for="trainStatus" class="block text-gray-700"
+            >Train Status</label
+          >
+          <select
+            id="trainStatus"
+            name="trainStatus"
+            class="w-full p-2 border border-gray-300 rounded mt-1 focus:ring-2 focus:ring-indigo-500"
+            required
+          >
+            <option value="" disabled selected>Select train status</option>
+            <option value="0">Active</option>
+            <option value="1">Inactive</option>
+          </select>
+          <p
+            id="trainStatus-feedback"
+            class="text-red-500 text-sm mt-1 hidden"
+          ></p>
+        </div>
+        <div>
+          <label for="totalSeats" class="block text-gray-700"
+            >Total Seats</label
+          >
+          <input
+            type="number"
+            id="totalSeats"
+            name="totalSeats"
+            class="w-full p-2 border border-gray-300 rounded mt-1 focus:ring-2 focus:ring-indigo-500"
+            required
+          />
+          <p
+            id="totalSeats-feedback"
+            class="text-red-500 text-sm mt-1 hidden"
+          ></p>
+        </div>
+        <div>
+          <label for="fare" class="block text-gray-700">Fare</label>
+          <input
+            type="number"
+            id="fare"
+            name="fare"
+            class="w-full p-2 border border-gray-300 rounded mt-1 focus:ring-2 focus:ring-indigo-500"
+            required
+          />
+          <p id="fare-feedback" class="text-red-500 text-sm mt-1 hidden"></p>
+        </div>
+        <div>
+          <label for="source" class="block text-gray-700">Source Station</label>
+          <input
+            type="text"
+            id="source"
+            name="source"
+            class="w-full p-2 border border-gray-300 rounded mt-1 focus:ring-2 focus:ring-indigo-500"
+            required
+          />
+          <p id="source-feedback" class="text-red-500 text-sm mt-1 hidden"></p>
+        </div>
+        <div>
+          <label for="destination" class="block text-gray-700"
+            >Destination Station</label
+          >
+          <input
+            type="text"
+            id="destination"
+            name="destination"
+            class="w-full p-2 border border-gray-300 rounded mt-1 focus:ring-2 focus:ring-indigo-500"
+            required
+          />
+          <p
+            id="destination-feedback"
+            class="text-red-500 text-sm mt-1 hidden"
+          ></p>
+        </div>
+        <div>
+          <label for="distance" class="block text-gray-700">Distance</label>
+          <input
+            type="number"
+            id="distance"
+            name="distance"
+            class="w-full p-2 border border-gray-300 rounded mt-1 focus:ring-2 focus:ring-indigo-500"
+            required
+          />
+          <p
+            id="distance-feedback"
+            class="text-red-500 text-sm mt-1 hidden"
+          ></p>
+        </div>
+        <div>
+          <label for="duration" class="block text-gray-700">Duration</label>
+          <input
+            type="number"
+            id="duration"
+            name="duration"
+            class="w-full p-2 border border-gray-300 rounded mt-1 focus:ring-2 focus:ring-indigo-500"
+            required
+          />
+          <p
+            id="duration-feedback"
+            class="text-red-500 text-sm mt-1 hidden"
+          ></p>
+        </div>
+        <div class="col-span-2">
+          <label for="stationIds" class="block text-gray-700"
+            >Station IDs</label
+          >
+          <input
+            type="text"
+            id="stationIds"
+            name="stationIds"
+            class="w-full p-2 border border-gray-300 rounded mt-1 focus:ring-2 focus:ring-indigo-500"
+            placeholder="Enter station IDs separated by commas"
+          />
+          <p
+            id="stationIds-feedback"
+            class="text-red-500 text-sm mt-1 hidden"
+          ></p>
+        </div>
+        <div class="col-span-2">
+          <button
+            type="submit"
+            id="formButton"
+            class="w-full p-3 bg-indigo-600 text-white rounded mt-4 hover:bg-indigo-700"
+          >
+            Register Train
+          </button>
+        </div>
+      </form>
+    </div>
+  </body>
+</html>

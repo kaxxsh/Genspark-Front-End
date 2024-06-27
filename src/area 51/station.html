@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="../../scss/main/nav/css/nav.css" />
+    <link rel="stylesheet" href="../../scss/global/css/Styles.css" />
+    <link rel="stylesheet" href="../../scss/area 51/admin/css/Styles.css" />
+    <script src="../../js/config.js"></script>
+    <script>
+      async function fetchData() {
+        try {
+          const response = await fetch(
+            `${URLS.base}/api/User/Station`
+          );
+          return response.json();
+        } catch (error) {
+          console.log(error);
+        }
+      }
+
+      function createTableRow(station, index) {
+        return `
+          <div class="Card">
+            <div class="Card-data">
+              <div class="table-data">${index + 1}</div>
+              <div class="table-data">${station.stationCode}</div>
+              <div class="table-data">${station.stationName}</div>
+              <div class="table-data">${station.pincode}</div>
+            </div>
+            <div class="Card-edit">
+              <img src="../../Asserts/Nav/edit.svg" alt="Edit" onclick="editstation('${
+                station.stationId
+              }')" />
+              <img src="../../Asserts/Nav/delete.svg" alt="Delete" onclick="deletestation('${
+                station.stationId
+              }')"/>
+            </div>
+          </div>
+        `;
+      }
+            document.addEventListener("DOMContentLoaded", function () {
+        const hamburgerBtn = document.getElementById("hamburgerBtn");
+        const closeBtn = document.getElementById("closeBtn");
+        const navbar = document.getElementById("menu");
+        const body = document.body;
+
+        function adjustMenuDisplay() {
+          if (window.innerWidth > 768) {
+            navbar.style.display = "flex";
+            hamburgerBtn.style.display = "none";
+          } else {
+            navbar.style.display = "none";
+            hamburgerBtn.style.display = "block";
+          }
+        }
+
+        // Call adjustMenuDisplay on page load and window resize
+        adjustMenuDisplay();
+        window.addEventListener("resize", adjustMenuDisplay);
+
+        hamburgerBtn.addEventListener("click", function () {
+          navbar.classList.toggle("active");
+          navbar.style.display = "flex";
+          hamburgerBtn.style.display = "none";
+        });
+
+        closeBtn.addEventListener("click", function () {
+          navbar.style.display = "none";
+          navbar.classList.remove("active");
+          hamburgerBtn.style.display = "block";
+        });
+      });
+
+      document.addEventListener("DOMContentLoaded", async () => {
+        const tableDataContainer = document.querySelector(".table-data");
+        const stations = await fetchData();
+        console.log(stations);
+        if (stations) {
+          tableDataContainer.innerHTML = stations.map(createTableRow).join("");
+        }
+      });
+
+      const deletestation = (id) => {
+        fetch(`${URLS.base}/api/Admin/Station/${id}`, {
+          method: "DELETE",
+        })
+          .then((response) => {
+            if (response.ok) {
+              alert("Station deleted successfully");
+              window.location.reload();
+            } else {
+              response.json().then((data) => {
+                alert(`Error: ${data.message}`);
+              });
+            }
+          })
+          .catch((error) => {
+            alert(`Error: ${error.message}`);
+          });
+      };
+      const editstation = (id) => {
+        window.location.href = `./add/addStation.html?id=${id}`;
+      };
+    </script>
+  </head>
+  <body>
+    <nav>
+      <div class="logo">
+         <button class="hamburger" id="hamburgerBtn">&#9776;</button>
+        <img src="../../Asserts/Nav/logo.svg" alt="Company Logo" />
+        <div class="title">Train</div>
+      </div>
+      <div class="menu" id="topmenu">
+        <div class="customer">
+          <img src="../../Asserts/Nav/customer.svg" alt="Customer Service" />
+          <div class="title">Customer Service</div>
+        </div>
+        <div class="tickets">
+          <img src="../../Asserts/Nav/tickets.svg" alt="Tickets" />
+          <div class="title">My Tickets</div>
+        </div>
+        <div class="auth">
+          <img src="../../Asserts/Nav/user.svg" alt="User" />
+          <div
+            class="title"
+            onclick="window.location.href = 'registration.html'"
+          >
+            Logout
+          </div>
+        </div>
+      </div>
+    </nav>
+    <main>
+     <div class="menu " id="menu">
+        <a class="list" href="./admin.html">
+          <img
+            src="../../Asserts/area 51/nav/admin.svg"
+            alt="Admin Management"
+          />
+          <div class="title">Admin Management</div>
+        </a>
+        <a class="list" href="./user.html">
+          <img src="../../Asserts/area 51/nav/user.svg" alt="User Management" />
+          <div class="title">User Management</div>
+        </a>
+        <a class="list" href="./station.html">
+          <img src="../../Asserts/area 51/nav/station.svg" alt="Stations" />
+          <div class="title">Stations</div>
+        </a>
+        <a class="list" href="./train.html">
+          <img src="../../Asserts/area 51/nav/trains.svg" alt="Trains" />
+          <div class="title">Trains</div>
+        </a>
+        <a class="list" href="./ticket.html">
+          <img src="../../Asserts/area 51/nav/Tickets.svg" alt="Tickets" />
+          <div class="title">Tickets</div>
+        </a>
+        <button class="close-btn" id="closeBtn">&times;</button>
+      </div>
+    <div class="main" id="bottommain">
+        <div class="list">
+          <a href="./add/addStation.html">
+            <div class="stationadd add">
+              <img src="../../Asserts/area 51/nav/add.svg" alt="" />
+              <div class="title">ADD STATION</div>
+            </div>
+          </a>
+        </div>
+        <div class="table">
+          <div class="table-heading">
+            <div class="table-title">S.No</div>
+            <div class="table-title">Station Code</div>
+            <div class="table-title">Station Name</div>
+            <div class="table-title">Pincode</div>
+          </div>
+          <div class="table-data">
+            <!-- Fetched data will be inserted here -->
+          </div>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

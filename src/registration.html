@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="../scss/auth/css/Styles.css" />
+  </head>
+  <body>
+    <div class="registraion-container">
+      <div class="heading">
+        <div class="topic">Create an account</div>
+        <div class="description">
+          Enter your details to sign up for this app
+        </div>
+      </div>
+      <form id="register">
+        <div class="input-container">
+          <div class="input">
+            <label for="Username">Username</label>
+            <input
+              type="text"
+              id="Username"
+              placeholder="eg Username"
+              required
+            />
+          </div>
+          <div class="input">
+            <label for="Email">Email</label>
+            <input
+              type="text"
+              id="Email"
+              required
+              placeholder="eg Example@gmail.com"
+            />
+          </div>
+          <div class="input">
+            <label for="PhoneNumber">Phone Number</label>
+            <input
+              type="text"
+              id="PhoneNumber"
+              placeholder="eg 0123654789"
+              required
+            />
+          </div>
+          <div class="input">
+            <label for="Password">Password</label>
+            <input
+              type="password"
+              id="Password"
+              placeholder="eg User@123"
+              required
+            />
+          </div>
+          <div class="input">
+            <label for="ConformPassword">Confirm Password</label>
+            <input
+              type="password"
+              id="ConformPassword"
+              placeholder="Re-enter the Password"
+              required
+            />
+          </div>
+          <button type="submit">Register</button>
+          <div class="or">--- or ---</div>
+          <button onclick="window.location.href = 'login.html'">Login</button>
+        </div>
+      </form>
+    </div>
+    <script src="../js/config.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.7.2/axios.min.js"></script>
+    <script>
+      document
+        .getElementById("register")
+        .addEventListener("submit", validateForm);
+      function validateForm(e) {
+        e.preventDefault();
+        const username = document.getElementById("Username").value;
+        const email = document.getElementById("Email").value;
+        const phoneNumber = document.getElementById("PhoneNumber").value;
+        const password = document.getElementById("Password").value;
+        const conformPassword =
+          document.getElementById("ConformPassword").value;
+        if (password !== conformPassword) {
+          alert("Password and Conform Password should be same");
+          return false;
+        }
+
+        console.log(username, email, phoneNumber, password, conformPassword);
+        axios
+          .post(
+            `${URLS.base}/api/Auth/register`,
+            {
+              username: username,
+              email: email,
+              phoneNumber: phoneNumber,
+              password: password,
+              confirmPassword: conformPassword,
+              Roles: ["User"],
+            },
+            {
+              withCredentials: true,
+            }
+          )
+          .then((res) => {
+            console.log(res);
+            if (res) {
+              alert("Registration Success");
+              window.location.href = "./login.html";
+            } else {
+              alert("Registration Failed");
+            }
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      }
+    </script>
+  </body>
+</html>

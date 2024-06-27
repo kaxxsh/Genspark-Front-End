@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Station Registration Form</title>
+    <!-- Tailwind CSS CDN -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <script src="../../../js/config.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const id = new URLSearchParams(window.location.search).get("id");
+        const formTitle = document.getElementById("formTitle");
+        const formButton = document.getElementById("formButton");
+
+        if (id) {
+          formTitle.textContent = "Editing Station Details";
+          formButton.textContent = "Edit Station";
+
+          fetch(`${URLS.base}/api/User/Station/${id}`)
+            .then((response) => response.json())
+            .then((data) => {
+              document.getElementById("stationName").value = data.stationName;
+              document.getElementById("stationCode").value = data.stationCode;
+              document.getElementById("stationType").value = data.stationType;
+              document.getElementById("pincode").value = data.pincode;
+            })
+            .catch((error) => {
+              console.error("Error fetching station data:", error);
+            });
+        }
+
+        document
+          .getElementById("stationForm")
+          .addEventListener("submit", (event) => {
+            event.preventDefault();
+            const stationName = document.getElementById("stationName").value;
+            const stationCode = document.getElementById("stationCode").value;
+            const stationType = document.getElementById("stationType").value;
+            const pincode = document.getElementById("pincode").value;
+            const id = new URLSearchParams(window.location.search).get("id");
+            const method = id ? "PUT" : "POST";
+            fetch(`${URLS.base}/api/Admin/Station/${id ? id : ""}`, {
+              method,
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                stationName,
+                stationCode,
+                stationType: parseInt(stationType),
+                pincode,
+              }),
+            })
+              .then((response) => {
+                if (response.ok) {
+                  alert(
+                    `Station ${id ? "updated" : "registered"} successfully`
+                  );
+                  window.location.href = "../station.html";
+                } else {
+                  response.json().then((data) => {
+                    alert(`Error: ${data.message}`);
+                  });
+                }
+              })
+              .catch((error) => {
+                alert(`Error: ${error.message}`);
+              });
+          });
+      });
+    </script>
+  </head>
+  <body class="bg-gray-100 min-h-screen flex items-center justify-center">
+    <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+      <h2 id="formTitle" class="text-2xl font-bold mb-6 text-gray-800">Add New Station</h2>
+      <form id="stationForm" class="space-y-6">
+        <div>
+          <label for="stationName" class="block text-gray-700">Station Name</label>
+          <input
+            type="text"
+            id="stationName"
+            name="stationName"
+            class="w-full p-2 border border-gray-300 rounded mt-1 focus:ring-2 focus:ring-indigo-500"
+            required
+          />
+          <p id="stationName-feedback" class="text-red-500 text-sm mt-1 hidden"></p>
+        </div>
+        <div>
+          <label for="stationCode" class="block text-gray-700">Station Code</label>
+          <input
+            type="text"
+            id="stationCode"
+            name="stationCode"
+            class="w-full p-2 border border-gray-300 rounded mt-1 focus:ring-2 focus:ring-indigo-500"
+            required
+          />
+          <p id="stationCode-feedback" class="text-red-500 text-sm mt-1 hidden"></p>
+        </div>
+        <div>
+          <label for="stationType" class="block text-gray-700">Station Type</label>
+          <select
+            id="stationType"
+            name="stationType"
+            class="w-full p-2 border border-gray-300 rounded mt-1 focus:ring-2 focus:ring-indigo-500"
+            required
+          >
+            <option value="" disabled selected>Select station type</option>
+            <option value="0">Junction</option>
+            <option value="1">Terminal</option>
+            <option value="2">Substation</option>
+          </select>
+          <p id="stationType-feedback" class="text-red-500 text-sm mt-1 hidden"></p>
+        </div>
+        <div>
+          <label for="pincode" class="block text-gray-700">Pincode</label>
+          <input
+            type="text"
+            id="pincode"
+            name="pincode"
+            class="w-full p-2 border border-gray-300 rounded mt-1 focus:ring-2 focus:ring-indigo-500"
+            required
+          />
+          <p id="pincode-feedback" class="text-red-500 text-sm mt-1 hidden"></p>
+        </div>
+        <button
+          type="submit"
+          id="formButton"
+          class="w-full bg-indigo-500 text-white py-2 rounded hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        >
+          Add Station
+        </button>
+      </form>
+    </div>
+  </body>
+</html>

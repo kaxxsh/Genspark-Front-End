@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="../scss/main/nav/css/nav.css" />
+    <link rel="stylesheet" href="../scss/global/css/Styles.css" />
+    <link rel="stylesheet" href="../scss/ticket/css/Styles.css" />
+  </head>
+  <body>
+    <nav>
+      <div class="logo">
+        <img src="../Asserts/Nav/logo.svg" alt="Company Logo" />
+        <div class="title">Train</div>
+      </div>
+      <div class="menu">
+        <div class="customer">
+          <img src="../Asserts/Nav/customer.svg" alt="Customer Service" />
+          <div class="title">Customer Service</div>
+        </div>
+        <div class="tickets">
+          <img src="../Asserts/Nav/tickets.svg" alt="Tickets" />
+          <div class="title">My Tickets</div>
+        </div>
+        <div class="auth">
+          <img src="../Asserts/Nav/user.svg" alt="User" />
+          <div
+            class="title"
+            onclick="window.location.href = 'registration.html'"
+          >
+            Logout
+          </div>
+        </div>
+      </div>
+    </nav>
+    <main>
+      <div class="menu">
+        <div class="options">Booked Tickets</div>
+        <div class="options">|</div>
+        <div class="options">Canceled Tickets</div>
+      </div>
+      <div class="ticket-details">
+        <div class="card">
+          <div class="train-type">CC General Quota</div>
+          <div class="train-timing">
+            <div class="train-details">
+              <div class="date">Fri, 28 Jun</div>
+              <div class="number">12345</div>
+              <div class="name">Yelagiri</div>
+            </div>
+            <div class="timing-details">
+              <div class="from">
+                <div class="station-timing">05:17</div>
+                <div class="station-name">vaniyambadi</div>
+              </div>
+              <div class="duration">
+                <div class="duration-time">1h 30m</div>
+                <div class="duration-line"></div>
+              </div>
+              <div class="to">
+                <div class="station-timing">06:47</div>
+                <div class="station-name">Jolarpettai</div>
+              </div>
+            </div>
+          </div>
+          <div class="line"></div>
+          <div class="boarding-details">
+            <div class="title">Boarding Station</div>
+            <div class="station-details">
+              <div class="station-name">Vaniyambadi -</div>
+              <div class="station-code">VN</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.7.2/axios.min.js"></script>
+    <script src="../js/config.js"></script>
+  </body>
+  <script>
+    const id = "ce982c4a-5f49-4ab8-a3a5-d7ff6957fb98";
+    axios
+      .get(`${URLS.base}/api/User/User/Ticket/${id}`)
+      .then((res) => {
+        console.log(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  </script>
+</html>

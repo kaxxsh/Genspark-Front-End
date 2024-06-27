@@ -1,0 +1,61 @@
+nav {
+  top: 0;
+  position: sticky;
+  height: 10vh;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: bold;
+  letter-spacing: 0.1rem;
+  border-bottom: 1px solid #0770e4;
+  background-color: #08161d;
+  color: white;
+  z-index: 1000;
+  .logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+
+    &:hover {
+      cursor: pointer;
+    }
+
+    .title {
+      font-size: 1.5rem;
+      margin-left: 5px;
+    }
+
+    img {
+      width: 50px;
+      height: 50px;
+    }
+  }
+
+  .menu {
+    display: flex;
+    padding: 0.5rem;
+    width: 35vw;
+    justify-content: space-around;
+
+    img {
+      width: 30px;
+      height: 30px;
+    }
+
+    .customer,
+    .auth,
+    .tickets {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      justify-content: center;
+
+      &:hover {
+        cursor: pointer;
+        color: #0770e4;
+      }
+    }
+  }
+
+}
