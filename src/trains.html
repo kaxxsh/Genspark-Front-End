@@ -18,9 +18,9 @@
         <div class="title">Train</div>
       </div>
       <div class="menu">
-        <div class="customer">
+        <div class="customer" onclick="checkbalance()">
           <img src="../Asserts/Nav/customer.svg" alt="Customer Service" />
-          <div class="title">Customer Service</div>
+          <div class="title">Balance</div>
         </div>
         <div class="tickets">
           <img src="../Asserts/Nav/tickets.svg" alt="Tickets" />
@@ -30,7 +30,7 @@
           <img src="../Asserts/Nav/user.svg" alt="User" />
           <div
             class="title"
-            onclick="window.location.href = 'registration.html'"
+            onclick="document.cookie = 'railways-token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'; window.location.href = 'login.html'"
           >
             Logout
           </div>
@@ -76,9 +76,9 @@
     <script src="../js/config.js"></script>
     <script src="//code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="//code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <script src="../utils/tokenDecoder.js"></script>
     <script>
       let stations = [];
-
       document.addEventListener("DOMContentLoaded", function () {
         var today = new Date();
         var dd = String(today.getDate()).padStart(2, "0");

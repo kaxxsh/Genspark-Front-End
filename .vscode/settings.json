@@ -1,0 +1,9 @@
+{  
+"liveServer.settings.https":   
+{
+"enable": true, 
+"cert": "C:\\Users\\kames\\OneDrive\\Desktop\\Front-End\\src\\cert.pem", 
+"key": "C:\\Users\\kames\\OneDrive\\Desktop\\Front-End\\src\\key.pem", 
+"passphrase": "12345"  
+}  
+}

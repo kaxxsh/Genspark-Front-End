@@ -9,25 +9,28 @@
     <link rel="stylesheet" href="../scss/booking/css/Styles.css" />
   </head>
   <body>
+    <script src="../utils/tokenDecoder.js"></script>
     <nav>
       <div class="logo">
         <img src="../Asserts/Nav/logo.svg" alt="Company Logo" />
         <div class="title">Train</div>
       </div>
       <div class="menu">
-        <div class="customer">
+        <div class="customer" onclick="checkbalance()">
           <img src="../Asserts/Nav/customer.svg" alt="Customer Service" />
-          <div class="title">Customer Service</div>
+          <div class="title">Balance</div>
         </div>
         <div class="tickets">
           <img src="../Asserts/Nav/tickets.svg" alt="Tickets" />
-          <div class="title">My Tickets</div>
+          <div class="title" onclick="window.location.href = 'tickets.html'">
+            My Tickets
+          </div>
         </div>
         <div class="auth">
           <img src="../Asserts/Nav/user.svg" alt="User" />
           <div
             class="title"
-            onclick="window.location.href = 'registration.html'"
+            onclick="document.cookie = 'railways-token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'; window.location.href = 'login.html'"
           >
             Logout
           </div>
@@ -186,7 +189,17 @@
       integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy"
       crossorigin="anonymous"
     ></script>
+
     <script>
+      if (
+        !document.cookie.split(";").some((item) => {
+          const [name, value] = item.trim().split("=");
+          return name === "railways-token" && value !== "" && value !== "null";
+        })
+      ) {
+        window.location.href = "./login.html";
+      }
+      
       const passengers = [];
 
       function addPassenger() {
@@ -276,7 +289,6 @@
         return stations.find((station) => station.stationId === stationId);
       }
 
-      const userid = "ce982c4a-5f49-4ab8-a3a5-d7ff6957fb98";
       function payment() {
         const trainId = new URLSearchParams(window.location.search).get(
           "trainId"
@@ -293,6 +305,9 @@
           .then((res) => {
             console.log(res);
           })
+          .catch((err) => {
+            window.location.href = "./tickets.html";
+          });
       }
     </script>
   </body>

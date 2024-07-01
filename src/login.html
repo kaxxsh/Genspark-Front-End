@@ -7,6 +7,67 @@
     <link rel="stylesheet" href="../scss/auth/css/Styles.css" />
   </head>
   <body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.7.2/axios.min.js"></script>
+    <script src="../js/config.js"></script>
+    <script src="../utils/tokenDecoder.js"></script>
+    <script>
+      const decode = decodeToken();
+      if (decode) {
+        if (
+          decode[
+            "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
+          ] === "Admin"
+        ) {
+          window.location.href = "./area 51/admin.html";
+        } else if (
+          decode[
+            "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
+          ] === "User"
+        ) {
+          window.location.href = "/src/main.html";
+        }
+      }
+      function submitForm() {
+        const username = document.getElementById("Username").value;
+        const password = document.getElementById("Password").value;
+        axios
+          .post(
+            `${URLS.base}/api/Auth/login`,
+            {
+              username: username,
+              password: password,
+            },
+            {
+              withCredentials: true,
+            }
+          )
+          .then((res) => {
+            console.log(res.data);
+            const decode = decodeToken();
+            console.log(
+              decode[
+                "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
+              ]
+            );
+            if (
+              decode[
+                "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
+              ] === "Admin"
+            ) {
+              window.location.href = "./area 51/admin.html";
+            } else if (
+              decode[
+                "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
+              ] === "User"
+            ) {
+              window.location.href = "/src/main.html";
+            }
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      }
+    </script>
     <div class="registraion-container">
       <div class="heading">
         <div class="topic">Login</div>
@@ -38,34 +99,5 @@
         </div>
       </form>
     </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.7.2/axios.min.js"></script>
-    <script src="../js/config.js"></script>
-    <script>
-      function submitForm() {
-        const username = document.getElementById("Username").value;
-        const password = document.getElementById("Password").value;
-        axios
-          .post(
-            `${URLS.base}/api/Auth/login`,
-            {
-              username: username,
-              password: password,
-            },
-            {
-              withCredentials: true,
-            }
-          )
-          .then((res) => {
-            console.log(res.data);
-            document.cookie = `token=${res.data.token}; expires=${
-              new Date() + 1
-            }; path=/`;
-            window.location.href = "./main.html";
-          })
-          .catch((error) => {
-            console.error(error);
-          });
-      }
-    </script>
   </body>
 </html>

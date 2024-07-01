@@ -9,15 +9,85 @@
     <link rel="stylesheet" href="../scss/ticket/css/Styles.css" />
   </head>
   <body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.7.2/axios.min.js"></script>
+    <script src="../js/config.js"></script>
+    <script src="../utils/tokenDecoder.js"></script>
+    <script>
+      let stations = [];
+      document.addEventListener("DOMContentLoaded", () => {
+        const ticketDetailsContainer =
+          document.getElementById("ticket-details");
+
+        axios.get(`${URLS.base}/api/User/Station`).then((res) => {
+          stations = res.data;
+        });
+
+        axios
+          .get(`${URLS.base}/api/User/User/Ticket/${userid}`)
+          .then((res) => {
+            const tickets = res.data;
+            console.log(findStation("2cf309ad-8c71-413f-aef5-08dc953d786b"));
+            ticketDetailsContainer.innerHTML = "";
+            tickets.forEach((ticket) => {
+              const ticketCard = document.createElement("div");
+              ticketCard.classList.add("card");
+              let source = findStation(ticket.source);
+              let destination = findStation(ticket.destination);
+              ticketCard.innerHTML = `
+          <div class="train-type">CC General Quota</div>
+          <div class="train-timing">
+            <div class="train-details">
+              <div class="date">${new Date(
+                ticket.journeyDate
+              ).toDateString()}</div>
+              <div class="name">Train Name</div> <!-- Replace with actual train name if available -->
+            </div>
+            <div class="timing-details">
+              <div class="from">
+                <div class="station-timing">05:17</div> <!-- Replace with actual timing if available -->
+                <div class="station-name">${source.stationName}</div>
+              </div>
+              <div class="duration">
+                <div class="duration-time">1h 30m</div> <!-- Replace with actual duration if available -->
+                <div class="duration-line"></div>
+              </div>
+              <div class="to">
+                <div class="station-timing">06:47</div> <!-- Replace with actual timing if available -->
+                <div class="station-name">${destination.stationName}</div>
+              </div>
+            </div>
+          </div>
+          <div class="line"></div>
+          <div class="boarding-details">
+            <div class="title">Boarding Station</div>
+            <div class="station-details">
+              <div class="station-name">${source.stationName} -</div>
+              <div class="station-code">${source.stationCode}</div> <!-- Replace with actual station code if available -->
+            </div>
+          </div>
+        `;
+              ticketDetailsContainer.appendChild(ticketCard);
+            });
+          })
+          .catch((err) => {
+            console.log(err);
+            ticketDetailsContainer.innerHTML = "<p>Error loading tickets.</p>";
+          });
+      });
+
+      function findStation(stationId) {
+        return stations.find((station) => station.stationId === stationId);
+      }
+    </script>
     <nav>
       <div class="logo">
         <img src="../Asserts/Nav/logo.svg" alt="Company Logo" />
         <div class="title">Train</div>
       </div>
       <div class="menu">
-        <div class="customer">
+        <div class="customer" onclick="checkbalance()">
           <img src="../Asserts/Nav/customer.svg" alt="Customer Service" />
-          <div class="title">Customer Service</div>
+          <div class="title">Balance</div>
         </div>
         <div class="tickets">
           <img src="../Asserts/Nav/tickets.svg" alt="Tickets" />
@@ -27,7 +97,7 @@
           <img src="../Asserts/Nav/user.svg" alt="User" />
           <div
             class="title"
-            onclick="window.location.href = 'registration.html'"
+            onclick="document.cookie = 'railways-token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'; window.location.href = 'login.html'"
           >
             Logout
           </div>
@@ -40,53 +110,9 @@
         <div class="options">|</div>
         <div class="options">Canceled Tickets</div>
       </div>
-      <div class="ticket-details">
-        <div class="card">
-          <div class="train-type">CC General Quota</div>
-          <div class="train-timing">
-            <div class="train-details">
-              <div class="date">Fri, 28 Jun</div>
-              <div class="number">12345</div>
-              <div class="name">Yelagiri</div>
-            </div>
-            <div class="timing-details">
-              <div class="from">
-                <div class="station-timing">05:17</div>
-                <div class="station-name">vaniyambadi</div>
-              </div>
-              <div class="duration">
-                <div class="duration-time">1h 30m</div>
-                <div class="duration-line"></div>
-              </div>
-              <div class="to">
-                <div class="station-timing">06:47</div>
-                <div class="station-name">Jolarpettai</div>
-              </div>
-            </div>
-          </div>
-          <div class="line"></div>
-          <div class="boarding-details">
-            <div class="title">Boarding Station</div>
-            <div class="station-details">
-              <div class="station-name">Vaniyambadi -</div>
-              <div class="station-code">VN</div>
-            </div>
-          </div>
-        </div>
+      <div id="ticket-details" class="ticket-details">
+        <!-- Ticket details will be inserted here -->
       </div>
     </main>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.7.2/axios.min.js"></script>
-    <script src="../js/config.js"></script>
   </body>
-  <script>
-    const id = "ce982c4a-5f49-4ab8-a3a5-d7ff6957fb98";
-    axios
-      .get(`${URLS.base}/api/User/User/Ticket/${id}`)
-      .then((res) => {
-        console.log(res.data);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  </script>
 </html>

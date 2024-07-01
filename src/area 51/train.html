@@ -9,45 +9,60 @@
     <link rel="stylesheet" href="../../scss/area 51/admin/css/Styles.css" />
   </head>
   <script src="../../js/config.js"></script>
+  <script src="../../utils/tokenDecoder.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.7.2/axios.min.js"></script>
   <script>
-        document.addEventListener("DOMContentLoaded", function () {
-        const hamburgerBtn = document.getElementById("hamburgerBtn");
-        const closeBtn = document.getElementById("closeBtn");
-        const navbar = document.getElementById("menu");
-        const body = document.body;
+    if (
+      !document.cookie.split(";").some((item) => {
+        const [name, value] = item.trim().split("=");
+        return name === "railways-token" && value !== "" && value !== "null";
+      })
+    ) {
+      window.location.href = "./login.html";
+    }
+    const decode = decodeToken();
+    if (
+      decode["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"] !==
+      "Admin"
+    ) {
+      window.location.href = "/src/main.html";
+    }
+    document.addEventListener("DOMContentLoaded", function () {
+      const hamburgerBtn = document.getElementById("hamburgerBtn");
+      const closeBtn = document.getElementById("closeBtn");
+      const navbar = document.getElementById("menu");
+      const body = document.body;
 
-        function adjustMenuDisplay() {
-          if (window.innerWidth > 768) {
-            navbar.style.display = "flex";
-            hamburgerBtn.style.display = "none";
-          } else {
-            navbar.style.display = "none";
-            hamburgerBtn.style.display = "block";
-          }
-        }
-
-        // Call adjustMenuDisplay on page load and window resize
-        adjustMenuDisplay();
-        window.addEventListener("resize", adjustMenuDisplay);
-
-        hamburgerBtn.addEventListener("click", function () {
-          navbar.classList.toggle("active");
+      function adjustMenuDisplay() {
+        if (window.innerWidth > 768) {
           navbar.style.display = "flex";
           hamburgerBtn.style.display = "none";
-        });
-
-        closeBtn.addEventListener("click", function () {
+        } else {
           navbar.style.display = "none";
-          navbar.classList.remove("active");
           hamburgerBtn.style.display = "block";
-        });
+        }
+      }
+
+      // Call adjustMenuDisplay on page load and window resize
+      adjustMenuDisplay();
+      window.addEventListener("resize", adjustMenuDisplay);
+
+      hamburgerBtn.addEventListener("click", function () {
+        navbar.classList.toggle("active");
+        navbar.style.display = "flex";
+        hamburgerBtn.style.display = "none";
       });
+
+      closeBtn.addEventListener("click", function () {
+        navbar.style.display = "none";
+        navbar.classList.remove("active");
+        hamburgerBtn.style.display = "block";
+      });
+    });
     async function fetchData() {
       try {
         const response = await fetch(`${URLS.base}/api/Admin/Train`);
-        const stationResponse = await fetch(
-          `${URLS.base}/api/User/Station`
-        );
+        const stationResponse = await fetch(`${URLS.base}/api/User/Station`);
         const trainData = await response.json();
         const stationData = await stationResponse.json();
         return { train: trainData, station: stationData };
@@ -130,9 +145,9 @@
         <div class="title">Train</div>
       </div>
       <div class="menu" id="topmenu">
-        <div class="customer">
+        <div class="customer" onclick="checkbalance()">
           <img src="../../Asserts/Nav/customer.svg" alt="Customer Service" />
-          <div class="title">Customer Service</div>
+          <div class="title">Balance</div>
         </div>
         <div class="tickets">
           <img src="../../Asserts/Nav/tickets.svg" alt="Tickets" />
@@ -143,7 +158,7 @@
           <img src="../../Asserts/Nav/user.svg" alt="User" />
           <div
             class="title"
-            onclick="window.location.href = 'registration.html'"
+            onclick="document.cookie = 'railways-token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'; window.location.href = '/src/login.html'"
           >
             Logout
           </div>
@@ -151,7 +166,7 @@
       </div>
     </nav>
     <main>
-      <div class="menu " id="menu">
+      <div class="menu" id="menu">
         <a class="list" href="./admin.html">
           <img
             src="../../Asserts/area 51/nav/admin.svg"

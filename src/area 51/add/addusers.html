@@ -9,7 +9,24 @@
       rel="stylesheet"
     />
     <script src="../../../js/config.js"></script>
+    <script src="../../utils/tokenDecoder.js"></script>
     <script>
+      if (
+        !document.cookie.split(";").some((item) => {
+          const [name, value] = item.trim().split("=");
+          return name === "railways-token" && value !== "" && value !== "null";
+        })
+      ) {
+        window.location.href = "./login.html";
+      }
+      const decode = decodeToken();
+      if (
+        decode[
+          "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
+        ] !== "Admin"
+      ) {
+        window.location.href = "/src/main.html";
+      }
       document.addEventListener("DOMContentLoaded", () => {
         const id = new URLSearchParams(window.location.search).get("userId");
         const formTitle = document.getElementById("formTitle");

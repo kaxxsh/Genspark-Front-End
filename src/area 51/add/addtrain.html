@@ -18,7 +18,24 @@
     />
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
     <script src="../../../js/config.js"></script>
+    <script src="../../utils/tokenDecoder.js"></script>
     <script>
+      if (
+        !document.cookie.split(";").some((item) => {
+          const [name, value] = item.trim().split("=");
+          return name === "railways-token" && value !== "" && value !== "null";
+        })
+      ) {
+        window.location.href = "./login.html";
+      }
+      const decode = decodeToken();
+      if (
+        decode[
+          "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
+        ] !== "Admin"
+      ) {
+        window.location.href = "/src/main.html";
+      }
       document.addEventListener("DOMContentLoaded", () => {
         // Get train ID from URL
         const urlParams = new URLSearchParams(window.location.search);

@@ -10,7 +10,24 @@
       rel="stylesheet"
     />
     <script src="../../../js/config.js"></script>
+    <script src="../../utils/tokenDecoder.js"></script>
     <script>
+      if (
+        !document.cookie.split(";").some((item) => {
+          const [name, value] = item.trim().split("=");
+          return name === "railways-token" && value !== "" && value !== "null";
+        })
+      ) {
+        window.location.href = "./login.html";
+      }
+      const decode = decodeToken();
+      if (
+        decode[
+          "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
+        ] !== "Admin"
+      ) {
+        window.location.href = "/src/main.html";
+      }
       document.addEventListener("DOMContentLoaded", () => {
         const id = new URLSearchParams(window.location.search).get("id");
         const formTitle = document.getElementById("formTitle");
@@ -76,10 +93,14 @@
   </head>
   <body class="bg-gray-100 min-h-screen flex items-center justify-center">
     <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
-      <h2 id="formTitle" class="text-2xl font-bold mb-6 text-gray-800">Add New Station</h2>
+      <h2 id="formTitle" class="text-2xl font-bold mb-6 text-gray-800">
+        Add New Station
+      </h2>
       <form id="stationForm" class="space-y-6">
         <div>
-          <label for="stationName" class="block text-gray-700">Station Name</label>
+          <label for="stationName" class="block text-gray-700"
+            >Station Name</label
+          >
           <input
             type="text"
             id="stationName"
@@ -87,10 +108,15 @@
             class="w-full p-2 border border-gray-300 rounded mt-1 focus:ring-2 focus:ring-indigo-500"
             required
           />
-          <p id="stationName-feedback" class="text-red-500 text-sm mt-1 hidden"></p>
+          <p
+            id="stationName-feedback"
+            class="text-red-500 text-sm mt-1 hidden"
+          ></p>
         </div>
         <div>
-          <label for="stationCode" class="block text-gray-700">Station Code</label>
+          <label for="stationCode" class="block text-gray-700"
+            >Station Code</label
+          >
           <input
             type="text"
             id="stationCode"
@@ -98,10 +124,15 @@
             class="w-full p-2 border border-gray-300 rounded mt-1 focus:ring-2 focus:ring-indigo-500"
             required
           />
-          <p id="stationCode-feedback" class="text-red-500 text-sm mt-1 hidden"></p>
+          <p
+            id="stationCode-feedback"
+            class="text-red-500 text-sm mt-1 hidden"
+          ></p>
         </div>
         <div>
-          <label for="stationType" class="block text-gray-700">Station Type</label>
+          <label for="stationType" class="block text-gray-700"
+            >Station Type</label
+          >
           <select
             id="stationType"
             name="stationType"
@@ -113,7 +144,10 @@
             <option value="1">Terminal</option>
             <option value="2">Substation</option>
           </select>
-          <p id="stationType-feedback" class="text-red-500 text-sm mt-1 hidden"></p>
+          <p
+            id="stationType-feedback"
+            class="text-red-500 text-sm mt-1 hidden"
+          ></p>
         </div>
         <div>
           <label for="pincode" class="block text-gray-700">Pincode</label>

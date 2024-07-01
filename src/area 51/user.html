@@ -14,8 +14,26 @@
       crossorigin="anonymous"
     />
     <script src="../../js/config.js"></script>
+    <script src="../../utils/tokenDecoder.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.7.2/axios.min.js"></script>
     <script>
-       document.addEventListener("DOMContentLoaded", function () {
+      if (
+        !document.cookie.split(";").some((item) => {
+          const [name, value] = item.trim().split("=");
+          return name === "railways-token" && value !== "" && value !== "null";
+        })
+      ) {
+        window.location.href = "./login.html";
+      }
+      const decode = decodeToken();
+      if (
+        decode[
+          "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
+        ] !== "Admin"
+      ) {
+        window.location.href = "/src/main.html";
+      }
+      document.addEventListener("DOMContentLoaded", function () {
         const hamburgerBtn = document.getElementById("hamburgerBtn");
         const closeBtn = document.getElementById("closeBtn");
         const navbar = document.getElementById("menu");
@@ -164,10 +182,10 @@
         <img src="../../Asserts/Nav/logo.svg" alt="Company Logo" />
         <div class="title">Train</div>
       </div>
-       <div class="menu" id="topmenu">
-        <div class="customer">
+      <div class="menu" id="topmenu">
+        <div class="customer" onclick="checkbalance()">
           <img src="../../Asserts/Nav/customer.svg" alt="Customer Service" />
-          <div class="title">Customer Service</div>
+          <div class="title">Balance</div>
         </div>
         <div class="tickets">
           <img src="../../Asserts/Nav/tickets.svg" alt="Tickets" />
@@ -177,7 +195,7 @@
           <img src="../../Asserts/Nav/user.svg" alt="User" />
           <div
             class="title"
-            onclick="window.location.href = 'registration.html'"
+            onclick="document.cookie = 'railways-token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'; window.location.href = '/src/login.html'"
           >
             Logout
           </div>
@@ -185,7 +203,7 @@
       </div>
     </nav>
     <main>
-      <div class="menu " id="menu">
+      <div class="menu" id="menu">
         <a class="list" href="./admin.html">
           <img
             src="../../Asserts/area 51/nav/admin.svg"
@@ -212,7 +230,7 @@
         <button class="close-btn" id="closeBtn">&times;</button>
       </div>
 
-     <div class="main" id="bottommain">
+      <div class="main" id="bottommain">
         <a class="link" href="./add/addusers.html">
           <div class="list">
             <div class="add">

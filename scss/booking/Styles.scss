@@ -44,6 +44,7 @@ main {
           border-radius: 0.3rem;
           padding: 1rem 2rem;
           box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+
           .train-type {
             display: flex;
             justify-content: space-between;
@@ -155,6 +156,7 @@ main {
         }
       }
     }
+
     .Passenger-details {
       width: 70vw;
       min-height: 50vh;
@@ -219,6 +221,7 @@ main {
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         display: flex;
         flex-direction: column;
+
         .title {
           font-size: 20px;
           font-weight: bold;
@@ -245,6 +248,7 @@ main {
               font-size: 16px;
               border: none;
               border-bottom: 1px solid #ccc;
+
               &:focus {
                 outline: none;
               }
@@ -274,27 +278,89 @@ main {
         }
       }
     }
-  
   }
 
-  .payment{
+  .payment {
     display: flex;
     align-items: center;
     justify-content: center;
-      button{
-        width: 70vw;
-        background-color: #FC790D;
-        color: #fff;
-        padding: 10px;
-        font-size: 16px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        transition: background-color 0.3s;
-        margin: 20px;
-        &:hover {
-          background-color: #FC790D;
-        }
+
+    button {
+      width: 70vw;
+      background-color: #fc790d;
+      color: #fff;
+      padding: 10px;
+      font-size: 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      margin: 20px;
+
+      &:hover {
+        background-color: #fc790d;
       }
     }
+  }
+
+  // Responsive styles
+  @media (max-width: 1024px) {
+    .booking-details,
+    .Passenger-details {
+      .booking-container,
+      .Passenger-details {
+        width: 90vw;
+      }
+    }
+
+    .add-passengers {
+      width: 60vw;
+    }
+
+    .payment button {
+      width: 90vw;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .booking-details,
+    .Passenger-details {
+      .booking-container,
+      .Passenger-details {
+        width: 100vw;
+        padding: 1rem;
+      }
+    }
+
+    .add-passengers {
+      width: 80vw;
+      padding: 1rem;
+    }
+
+    .payment button {
+      width: 100vw;
+      margin: 10px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .booking-details,
+    .Passenger-details {
+      .booking-container,
+      .Passenger-details {
+        width: 100vw;
+        padding: 0.5rem;
+      }
+    }
+
+    .add-passengers {
+      width: 100vw;
+      padding: 0.5rem;
+    }
+
+    .payment button {
+      width: 100vw;
+      margin: 5px;
+    }
+  }
 }

@@ -13,151 +13,31 @@
       integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
       crossorigin="anonymous"
     />
+    <script src="../../js/config.js"></script>
+    <script src="../../utils/tokenDecoder.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.7.2/axios.min.js"></script>
   </head>
-  <script src="../../js/config.js"></script>
-  <script>
-           document.addEventListener("DOMContentLoaded", function () {
-        const hamburgerBtn = document.getElementById("hamburgerBtn");
-        const closeBtn = document.getElementById("closeBtn");
-        const navbar = document.getElementById("menu");
-        const body = document.body;
-
-        function adjustMenuDisplay() {
-          if (window.innerWidth > 768) {
-            navbar.style.display = "flex";
-            hamburgerBtn.style.display = "none";
-          } else {
-            navbar.style.display = "none";
-            hamburgerBtn.style.display = "block";
-          }
-        }
-
-        // Call adjustMenuDisplay on page load and window resize
-        adjustMenuDisplay();
-        window.addEventListener("resize", adjustMenuDisplay);
-
-        hamburgerBtn.addEventListener("click", function () {
-          navbar.classList.toggle("active");
-          navbar.style.display = "flex";
-          hamburgerBtn.style.display = "none";
-        });
-
-        closeBtn.addEventListener("click", function () {
-          navbar.style.display = "none";
-          navbar.classList.remove("active");
-          hamburgerBtn.style.display = "block";
-        });
-      });
-    async function fetchData() {
-      try {
-        const response = await fetch(`${URLS.base}/api/Admin/Train`);
-        const stationResponse = await fetch(`${URLS.base}/api/User/Station`);
-        const trainData = await response.json();
-        const stationData = await stationResponse.json();
-        return { train: trainData, station: stationData };
-      } catch (error) {
-        console.log(error);
-      }
-    }
-
-    function getStationName(stationId, stations) {
-      const station = stations.find(
-        (station) => station.stationId === stationId
-      );
-      return station ? station.stationName : "Unknown";
-    }
-
-    function createTableRow(train, index, stations) {
-      const sourceName = getStationName(train.trainRoute.source, stations);
-      const destinationName = getStationName(
-        train.trainRoute.destination,
-        stations
-      );
-      return `
-          <div class="Card">
-      <div class="Card-data">
-        <div class="table-data-train">${index + 1}</div>
-        <div class="table-data-train">${train.trainNumber}</div>
-        <div class="table-data-train">${train.trainName}</div>
-        <div class="table-data-train">${sourceName}</div>
-        <div class="table-data-train">${destinationName}</div>
-      </div>
-      <div class="Card-edit">
-        <button
-          type="button"
-          class="btn btn-primary"
-          data-bs-toggle="modal"
-          data-bs-target="#exampleModal"
-        >
-          Pending
-        </button>
-        <button
-          type="button"
-          class="btn btn-primary"
-          data-bs-toggle="modal"
-          data-bs-target="#exampleModal"
-        >
-          booked
-        </button>
-      </div>
-    </div>
-        `;
-    }
-
-    document.addEventListener("DOMContentLoaded", async () => {
-      const tableDataContainer = document.querySelector(".table-data");
-      const data = await fetchData();
-      console.log(data);
-      if (data && data.train && data.station) {
-        tableDataContainer.innerHTML = data.train
-          .map((train, index) => createTableRow(train, index, data.station))
-          .join("");
-      }
-    });
-
-    const deletetrain = (id) => {
-      fetch(`${URLS.base}/api/Admin/Train/${id}`, {
-        method: "DELETE",
-      })
-        .then((response) => {
-          if (response.ok) {
-            alert("Train deleted successfully");
-            window.location.reload();
-          } else {
-            alert("Error deleting train");
-          }
-        })
-        .catch((error) => {
-          console.error("Error deleting train:", error);
-        });
-    };
-
-    const edittrain = (id) => {
-      window.location.href = `./add/addtrain.html?id=${id}`;
-    };
-  </script>
   <body>
     <nav>
       <div class="logo">
-         <button class="hamburger" id="hamburgerBtn">&#9776;</button>
+        <button class="hamburger" id="hamburgerBtn">&#9776;</button>
         <img src="../../Asserts/Nav/logo.svg" alt="Company Logo" />
         <div class="title">Train</div>
       </div>
       <div class="menu" id="topmenu">
-        <div class="customer">
+        <div class="customer" onclick="checkbalance()">
           <img src="../../Asserts/Nav/customer.svg" alt="Customer Service" />
-          <div class="title">Customer Service</div>
+          <div class="title">Balance</div>
         </div>
         <div class="tickets">
           <img src="../../Asserts/Nav/tickets.svg" alt="Tickets" />
           <div class="title">My Tickets</div>
         </div>
-
         <div class="auth">
           <img src="../../Asserts/Nav/user.svg" alt="User" />
           <div
             class="title"
-            onclick="window.location.href = 'registration.html'"
+            onclick="document.cookie = 'railways-token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'; window.location.href = '/src/login.html'"
           >
             Logout
           </div>
@@ -165,7 +45,7 @@
       </div>
     </nav>
     <main>
-      <div class="menu " id="menu">
+      <div class="menu" id="menu">
         <a class="list" href="./admin.html">
           <img
             src="../../Asserts/area 51/nav/admin.svg"
@@ -230,7 +110,9 @@
               aria-label="Close"
             ></button>
           </div>
-          <div class="modal-body"></div>
+          <div class="modal-body">
+            <!-- Table for displaying train number and passenger count will be inserted here -->
+          </div>
           <div class="modal-footer">
             <button
               type="button"
@@ -253,5 +135,287 @@
       integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy"
       crossorigin="anonymous"
     ></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+      if (
+        !document.cookie.split(";").some((item) => {
+          const [name, value] = item.trim().split("=");
+          return name === "railways-token" && value !== "" && value !== "null";
+        })
+      ) {
+        window.location.href = "./login.html";
+      }
+      const decode = decodeToken();
+      if (
+        decode[
+          "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
+        ] !== "Admin"
+      ) {
+        window.location.href = "/src/main.html";
+      }
+      document.addEventListener("DOMContentLoaded", function () {
+        const hamburgerBtn = document.getElementById("hamburgerBtn");
+        const closeBtn = document.getElementById("closeBtn");
+        const navbar = document.getElementById("menu");
+
+        function adjustMenuDisplay() {
+          if (window.innerWidth > 768) {
+            navbar.style.display = "flex";
+            hamburgerBtn.style.display = "none";
+          } else {
+            navbar.style.display = "none";
+            hamburgerBtn.style.display = "block";
+          }
+        }
+
+        adjustMenuDisplay();
+        window.addEventListener("resize", adjustMenuDisplay);
+
+        hamburgerBtn.addEventListener("click", function () {
+          navbar.classList.toggle("active");
+          navbar.style.display = "flex";
+          hamburgerBtn.style.display = "none";
+        });
+
+        closeBtn.addEventListener("click", function () {
+          navbar.style.display = "none";
+          navbar.classList.remove("active");
+          hamburgerBtn.style.display = "block";
+        });
+      });
+
+      async function fetchData() {
+        try {
+          const response = await fetch(`${URLS.base}/api/Admin/Train`);
+          const stationResponse = await fetch(`${URLS.base}/api/User/Station`);
+          const trainData = await response.json();
+          const stationData = await stationResponse.json();
+          return { train: trainData, station: stationData };
+        } catch (error) {
+          console.error("Error fetching data:", error);
+          alert("Failed to fetch data.");
+        }
+      }
+
+      function getStationName(stationId, stations) {
+        const station = stations.find(
+          (station) => station.stationId === stationId
+        );
+        return station ? station.stationName : "Unknown";
+      }
+
+      function createTableRow(train, index, stations) {
+        const sourceName = getStationName(train.trainRoute.source, stations);
+        const destinationName = getStationName(
+          train.trainRoute.destination,
+          stations
+        );
+        return `
+        <div class="Card">
+          <div class="Card-data">
+            <div class="table-data-train">${index + 1}</div>
+            <div class="table-data-train">${train.trainNumber}</div>
+            <div class="table-data-train">${train.trainName}</div>
+            <div class="table-data-train">${sourceName}</div>
+            <div class="table-data-train">${destinationName}</div>
+          </div>
+          <div class="Card-edit">
+            <button
+              type="button"
+              class="btn btn-primary"
+              data-bs-toggle="modal"
+              data-bs-target="#exampleModal"
+              onclick="PendingTickets('${train.trainId}')"
+            >
+              Pending
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              data-bs-toggle="modal"
+              data-bs-target="#exampleModal"
+              data-status="booked"
+              onclick="BookedTickets('${train.trainId}')"
+            >
+              Booked
+            </button>
+          </div>
+        </div>
+      `;
+      }
+
+      const PendingTickets = (id) => {
+        axios
+          .get(`${URLS.base}/api/Admin/Ticket/Pending`)
+          .then((response) => {
+            const filteredTickets = response.data.filter(
+              (ticket) => ticket.trainId === id
+            );
+            console.log(filteredTickets);
+              const passengerCount = filteredTickets.length;
+              const modalBody = document.querySelector(".modal-body");
+              modalBody.innerHTML = `
+              <div class="container">
+    
+                <p>Total Pending: ${passengerCount}</p>
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>Ticket ID</th>
+                      <th>Status</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${filteredTickets?.length > 0 && filteredTickets
+                      .map(
+                        (ticket) => `
+                      <tr>
+                        <td>${ticket.ticketId}</td>
+                        <td>${findstatus(ticket.ticketStatus)}</td>
+                        <td>
+                          <button class="btn btn-success" id="update" onclick="updateTicket('${
+                            ticket.ticketId
+                          }', 0)">Approve</button>
+                          <button class="btn btn-danger" onclick="updateTicket('${
+                            ticket.ticketId
+                          }', 2)">Cancel</button>
+                        </td>
+                      </tr>
+                    `
+                      )
+                      .join("")}
+                  </tbody>
+                </table>
+              </div>
+            `;
+            
+          })
+          
+          .catch((error) => {
+            console.error("Error fetching tickets:", error);
+            alert("Error fetching tickets.");
+          });
+      };
+
+      document.addEventListener("DOMContentLoaded", async () => {
+        const tableDataContainer = document.querySelector(".table-data");
+        const data = await fetchData();
+        if (data && data.train && data.station) {
+          tableDataContainer.innerHTML = data.train
+            .map((train, index) => createTableRow(train, index, data.station))
+            .join("");
+        }
+      });
+
+      const deletetrain = (id) => {
+        fetch(`${URLS.base}/api/Admin/Train/${id}`, {
+          method: "DELETE",
+        })
+          .then((response) => {
+            if (response.ok) {
+              alert("Train deleted successfully");
+              window.location.reload();
+            } else {
+              alert("Error deleting train");
+            }
+          })
+          .catch((error) => {
+            console.error("Error deleting train:", error);
+            alert("Error deleting train.");
+          });
+      };
+
+      const edittrain = (id) => {
+        window.location.href = `./add/addtrain.html?id=${id}`;
+      };
+
+      const findstatus = (status) => {
+        if (status === 0) {
+          return "Booked";
+        } else if (status === 1) {
+          return "Pending";
+        } else {
+          return "Cancelled";
+        }
+      };
+
+      function updateTicket(ticketId, action) {
+        console.log(
+          `${URLS.base}/api/Admin/Ticket/Approve/${ticketId}?ticket=${action}`
+        );
+        axios
+          .put(
+            `${URLS.base}/api/Admin/Ticket/Approve/${ticketId}?ticket=${action}`
+          )
+          .then((response) => {
+            console.log("Ticket updated:", response.data);
+          })
+          .catch((error) => {
+            console.log("Error updating ticket:", error);
+          });
+      }
+
+      function BookedTickets(id) {
+        if (id) {
+          fetch(URLS.base + "/api/Admin/Ticket/Booked/" + id)
+            .then((response) => {
+              if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+              }
+              return response.json();
+            })
+            .then((data) => {
+              const modalBody = document.querySelector(".modal-body");
+              modalBody.innerHTML = ""; // Clear existing content
+
+              // Create table and header
+              const table = document.createElement("table");
+              table.innerHTML = `
+              <tr>
+                <th>Ticket ID</th>
+                <th>Train ID</th>
+                <th>User ID</th>
+                <th>Source</th>
+                <th>Destination</th>
+                <th>Journey Date</th>
+                <th>Booking Date</th>
+                <th>Passengers</th>
+                <th>Total Amount</th>
+                <th>Payment Status</th>
+                <th>Ticket Status</th>
+              </tr>`;
+
+              // Iterate over the array of tickets
+              data.forEach((ticket) => {
+                const row = table.insertRow();
+                row.innerHTML = `
+                <td>${ticket.ticketId}</td>
+                <td>${ticket.trainId}</td>
+                <td>${ticket.userId}</td>
+                <td>${ticket.source}</td>
+                <td>${ticket.destination}</td>
+                <td>${new Date(ticket.journeyDate).toLocaleString()}</td>
+                <td>${new Date(ticket.bookingDate).toLocaleString()}</td>
+                <td>${ticket.passengers
+                  .map(
+                    (passenger) =>
+                      `ID: ${passenger.passengerId}, Name: ${passenger.name}, Age: ${passenger.age}`
+                  )
+                  .join("<br>")}</td>
+                <td>${ticket.totalAmount}</td>
+                <td>${ticket.paymentStatus === 0 ? "Pending" : "Paid"}</td>
+                <td>${ticket.ticketStatus === 0 ? "Booked" : "Cancelled"}</td>
+              `;
+              });
+
+              modalBody.appendChild(table);
+            })
+            .catch((error) => {
+              console.error("Fetch error: ", error);
+            });
+        }
+      }
+    </script>
   </body>
 </html>

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+  <head> 
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Main Document</title>
@@ -14,15 +14,80 @@
     <script src="//code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
   </head>
   <body>
+    <script src="../utils/tokenDecoder.js"></script>
+    <script src="../js/config.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.7.2/axios.min.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        function checkToken() {
+          if (
+            !document.cookie.split(";").some((item) => {
+              const [name, value] = item.trim().split("=");
+              return (
+                name === "railways-token" && value !== "" && value !== "null"
+              );
+            })
+          ) {
+            window.location.href = "./login.html";
+          } else {
+            const decode = decodeToken();
+            console.log(
+              decode[
+                "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
+              ]
+            );
+          }
+        }
+        function setMinDepartureDate() {
+          const today = new Date();
+          const dd = String(today.getDate()).padStart(2, "0");
+          const mm = String(today.getMonth() + 1).padStart(2, "0");
+          const yyyy = today.getFullYear();
+          const minDate = `${yyyy}-${mm}-${dd}`;
+          document.getElementById("departureDate").setAttribute("min", minDate);
+        }
+
+        const station = [];
+        axios.get(`${URLS.base}/api/User/Station`).then((res) => {
+          res.data.forEach((element) => {
+            station.push(element.stationName);
+          });
+        });
+        $("#from").autocomplete({ source: station });
+        $("#to").autocomplete({ source: station });
+
+        function handleSearch() {
+          document
+            .getElementById("searchButton")
+            .addEventListener("click", function () {
+              const fromStation = document.getElementById("from").value;
+              const toStation = document.getElementById("to").value;
+              const departureDate =
+                document.getElementById("departureDate").value;
+              const queryParams = new URLSearchParams({
+                from: fromStation,
+                to: toStation,
+                date: departureDate,
+              }).toString();
+              window.location.href = `trains.html?${queryParams}`;
+            });
+        }
+
+        checkToken();
+        setMinDepartureDate();
+        handleSearch();
+      });
+    </script>
+
     <nav>
       <div class="logo">
         <img src="../Asserts/Nav/logo.svg" alt="Company Logo" />
         <div class="title">Train</div>
       </div>
       <div class="menu">
-        <div class="customer">
+        <div class="customer" onclick="checkbalance()">
           <img src="../Asserts/Nav/customer.svg" alt="Customer Service" />
-          <div class="title">Customer Service</div>
+          <div class="title">Balance</div>
         </div>
         <div class="tickets">
           <img src="../Asserts/Nav/tickets.svg" alt="Tickets" />
@@ -34,7 +99,7 @@
           <img src="../Asserts/Nav/user.svg" alt="User" />
           <div
             class="title"
-            onclick="window.location.href = 'registration.html'"
+            onclick="document.cookie = 'railways-token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'; window.location.href = 'login.html'"
           >
             Logout
           </div>
@@ -370,49 +435,5 @@
         </div>
       </footer>
     </main>
-    <script src="../js/config.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.7.2/axios.min.js"></script>
-    <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        var today = new Date();
-        var dd = String(today.getDate()).padStart(2, "0");
-        var mm = String(today.getMonth() + 1).padStart(2, "0");
-        var yyyy = today.getFullYear();
-
-        today = yyyy + "-" + mm + "-" + dd;
-        document.getElementById("departureDate").setAttribute("min", today);
-      });
-      let station = [];
-      axios.get(`${URLS.base}/api/User/Station`).then((res) => {
-        res.data.forEach((element) => {
-          station.push(element.stationName);
-        });
-      });
-      console.log(station);
-      $("#from").autocomplete({
-        source: station,
-      });
-      $("#to").autocomplete({
-        source: station,
-      });
-
-      document.addEventListener("DOMContentLoaded", function () {
-        document
-          .getElementById("searchButton")
-          .addEventListener("click", function () {
-            const fromStation = document.getElementById("from").value;
-            const toStation = document.getElementById("to").value;
-            const departureDate =
-              document.getElementById("departureDate").value;
-            const queryParams = new URLSearchParams({
-              from: fromStation,
-              to: toStation,
-              date: departureDate,
-            }).toString();
-
-            window.location.href = `trains.html?${queryParams}`;
-          });
-      });
-    </script>
   </body>
 </html>
