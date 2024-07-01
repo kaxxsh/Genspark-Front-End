@@ -32,7 +32,7 @@
           const response = await fetch(`${URLS.base}/api/User/Station`);
           return response.json();
         } catch (error) {
-          console.log(error);
+          console.error(error);
         }
       }
 
@@ -92,7 +92,6 @@
       document.addEventListener("DOMContentLoaded", async () => {
         const tableDataContainer = document.querySelector(".table-data");
         const stations = await fetchData();
-        console.log(stations);
         if (stations) {
           tableDataContainer.innerHTML = stations.map(createTableRow).join("");
         }

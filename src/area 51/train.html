@@ -67,7 +67,7 @@
         const stationData = await stationResponse.json();
         return { train: trainData, station: stationData };
       } catch (error) {
-        console.log(error);
+        console.error(error);
       }
     }
 
@@ -108,7 +108,6 @@
     document.addEventListener("DOMContentLoaded", async () => {
       const tableDataContainer = document.querySelector(".table-data");
       const data = await fetchData();
-      console.log(data);
       if (data && data.train && data.station) {
         tableDataContainer.innerHTML = data.train
           .map((train, index) => createTableRow(train, index, data.station))

@@ -18,7 +18,7 @@
     />
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
     <script src="../../../js/config.js"></script>
-    <script src="../../utils/tokenDecoder.js"></script>
+    <script src="../../../utils/tokenDecoder.js"></script>
     <script>
       if (
         !document.cookie.split(";").some((item) => {
@@ -55,7 +55,6 @@
               value: station.stationName,
               id: station.stationId,
             }));
-            console.log("Stations loaded:", stations); // Debug: Check loaded stations
 
             if (trainId) {
               formTitle.textContent = "Editing Train Details";
@@ -195,15 +194,6 @@
             ? `${URLS.base}/api/Admin/Train/${trainId}`
             : `${URLS.base}/api/Admin/Train`;
 
-          console.log(
-            trainName,
-            trainNumber,
-            trainType,
-            trainStatus,
-            totalSeats,
-            fare,
-            trainRoute
-          );
 
           fetch(url, {
             method: method,

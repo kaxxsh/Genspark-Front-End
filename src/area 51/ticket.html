@@ -251,7 +251,6 @@
             const filteredTickets = response.data.filter(
               (ticket) => ticket.trainId === id
             );
-            console.log(filteredTickets);
               const passengerCount = filteredTickets.length;
               const modalBody = document.querySelector(".modal-body");
               modalBody.innerHTML = `

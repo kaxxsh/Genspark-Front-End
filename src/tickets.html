@@ -26,7 +26,6 @@
           .get(`${URLS.base}/api/User/User/Ticket/${userid}`)
           .then((res) => {
             const tickets = res.data;
-            console.log(findStation("2cf309ad-8c71-413f-aef5-08dc953d786b"));
             ticketDetailsContainer.innerHTML = "";
             tickets.forEach((ticket) => {
               const ticketCard = document.createElement("div");
@@ -70,7 +69,6 @@
             });
           })
           .catch((err) => {
-            console.log(err);
             ticketDetailsContainer.innerHTML = "<p>Error loading tickets.</p>";
           });
       });

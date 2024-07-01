@@ -42,13 +42,7 @@
             }
           )
           .then((res) => {
-            console.log(res.data);
             const decode = decodeToken();
-            console.log(
-              decode[
-                "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
-              ]
-            );
             if (
               decode[
                 "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"

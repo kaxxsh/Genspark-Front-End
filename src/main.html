@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head> 
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Main Document</title>
@@ -31,11 +31,6 @@
             window.location.href = "./login.html";
           } else {
             const decode = decodeToken();
-            console.log(
-              decode[
-                "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
-              ]
-            );
           }
         }
         function setMinDepartureDate() {

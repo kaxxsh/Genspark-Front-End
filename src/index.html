@@ -377,9 +377,6 @@
         window.location.href = "./login.html";
       } else {
         const decode = decodeToken();
-        console.log(
-          decode["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"]
-        );
         document.addEventListener("DOMContentLoaded", function () {
           var today = new Date();
           var dd = String(today.getDate()).padStart(2, "0");
@@ -395,7 +392,6 @@
             station.push(element.stationName);
           });
         });
-        console.log(station);
         $("#from").autocomplete({
           source: station,
         });

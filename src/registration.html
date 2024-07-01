@@ -85,8 +85,6 @@
           alert("Password and Conform Password should be same");
           return false;
         }
-
-        console.log(username, email, phoneNumber, password, conformPassword);
         axios
           .post(
             `${URLS.base}/api/Auth/register`,
@@ -103,7 +101,6 @@
             }
           )
           .then((res) => {
-            console.log(res);
             if (res) {
               alert("Registration Success");
               window.location.href = "./login.html";

@@ -99,7 +99,7 @@
             });
           })
           .catch((err) => {
-            console.log(err);
+            console.error();(err);
           });
 
         // Assume you have a function to get URL parameters
@@ -139,7 +139,6 @@
         axios
           .get(`${URLS.base}/api/Admin/Train`)
           .then((res) => {
-            console.log(res.data);
             const container = document.getElementById("train");
             const filteredTrains = res.data.filter((train) => {
               const sourceMatch = train.trainRoute.source === fromStationId;
@@ -210,7 +209,7 @@
             });
           })
           .catch((err) => {
-            console.log(err);
+            console.error(err);
           });
       });
 
@@ -235,7 +234,6 @@
       }
 
       function bookTicket(trainId) {
-        console.log(trainId);
         window.location.href = `./booking.html?trainId=${trainId}`;
       }
     </script>
